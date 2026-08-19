@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AltTracker — Download</title>
+<style>
+  :root {
+    --bg: #0b1220;
+    --panel: #111c30;
+    --border: rgba(255,255,255,0.08);
+    --text: #e5e9f0;
+    --text-dim: #93a0b4;
+    --accent: #fbbf24;
+    --accent-text: #1a1300;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    background: radial-gradient(circle at 50% 0%, #16233d 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 36px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+    text-align: center;
+  }
+  .mark {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 20px;
+    border-radius: 14px;
+    background: linear-gradient(135deg,#2d3f55 0%,#111827 100%);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .tagline {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin: 0 0 28px;
+    line-height: 1.5;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+  }
+  .btn:hover { box-shadow: 0 8px 24px rgba(251,191,36,0.25); transform: translateY(-1px); }
+  .btn[aria-disabled="true"] { opacity: 0.6; pointer-events: none; }
+  .meta {
+    margin-top: 12px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 28px 0 20px;
+  }
+  .notes {
+    text-align: left;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.65;
+  }
+  .notes strong { color: var(--text); }
+  .notes ol { margin: 8px 0 18px; padding-left: 20px; }
+  .notes li { margin-bottom: 6px; }
+  .footer {
+    margin-top: 28px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  .footer a { color: var(--text-dim); }
+  code {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="mark">📊</div>
+    <h1>AltTracker</h1>
+    <p class="tagline">Private investment &amp; net worth tracking for family offices.<br>Runs locally on Windows — your data never leaves your machine.</p>
+
+    <a id="downloadBtn" class="btn" href="https://github.com/rlaperch/Alt-tracker-releases/releases/latest" aria-disabled="true">
+      Loading latest version…
+    </a>
+    <div class="meta" id="versionMeta">Windows 10/11 · 64-bit</div>
+
+    <div class="divider"></div>
+
+    <div class="notes">
+      <strong>Installing (beta build)</strong>
+      <ol>
+        <li>Run the downloaded <code>.exe</code>. Windows SmartScreen may show "Windows protected your PC" — this is expected for a new beta build. Click <strong>More info</strong>, then <strong>Run anyway</strong>.</li>
+        <li>Follow the installer prompts. AltTracker installs to your user folder — no admin rights needed.</li>
+        <li>On first launch, use <strong>File → Open</strong> to load your data file, or start fresh.</li>
+      </ol>
+      <strong>Feedback</strong>
+      <p style="margin:6px 0 0;">This is a beta — if something looks wrong or breaks, email <a href="mailto:rich@laperch.com" style="color:var(--text);">rich@laperch.com</a> with what you were doing when it happened.</p>
+    </div>
+  </div>
+
+  <div class="footer">AltTracker · <a href="https://github.com/rlaperch/Alt-tracker-releases/releases" target="_blank" rel="noopener">All releases</a></div>
+
+<script>
+  (async () => {
+    const btn = document.getElementById('downloadBtn');
+    const meta = document.getElementById('versionMeta');
+    try {
+      const res = await fetch('https://api.github.com/repos/rlaperch/Alt-tracker-releases/releases/latest');
+      if (!res.ok) throw new Error('bad response');
+      const rel = await res.json();
+      const asset = (rel.assets || []).find(a => a.name.toLowerCase().endsWith('.exe'));
+      if (!asset) throw new Error('no exe asset');
+      btn.href = asset.browser_download_url;
+      btn.removeAttribute('aria-disabled');
+      btn.textContent = 'Download for Windows';
+      const version = (rel.tag_name || '').replace(/^v/, '');
+      meta.textContent = `Version ${version} · Windows 10/11 · 64-bit`;
+    } catch (e) {
+      btn.href = 'https://github.com/rlaperch/Alt-tracker-releases/releases/latest';
+      btn.removeAttribute('aria-disabled');
+      btn.textContent = 'View Latest Release';
+      meta.textContent = 'Windows 10/11 · 64-bit';
+    }
+  })();
+</script>
+
+</body>
+</html>
